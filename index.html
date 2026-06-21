@@ -262,6 +262,7 @@
     }
 
     .exercise-card {
+      position: relative;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -273,7 +274,16 @@
     .exercise-card.done {
       background: linear-gradient(180deg, rgba(44, 214, 125, 0.10), rgba(32, 201, 151, 0.06));
       border-color: rgba(44, 214, 125, 0.30);
-      opacity: 0.94;
+      opacity: 0.82;
+    }
+
+    .exercise-card.done::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: linear-gradient(180deg, rgba(44, 214, 125, 0.95), rgba(32, 201, 151, 0.78));
+      pointer-events: none;
     }
 
     .exercise-card.done .exercise-name,
@@ -353,6 +363,33 @@
       white-space: nowrap;
     }
 
+    .tag.sets {
+      font-size: 1.08em;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+      background: rgba(255, 138, 31, 0.12);
+      border-color: rgba(255, 138, 31, 0.24);
+    }
+
+    .tag.equipment-machine {
+      color: #cde7ff;
+      background: rgba(54, 132, 255, 0.12);
+      border-color: rgba(54, 132, 255, 0.24);
+    }
+
+    .tag.equipment-dumbbell {
+      color: #ffe2c3;
+      background: rgba(255, 149, 54, 0.16);
+      border-color: rgba(255, 149, 54, 0.26);
+    }
+
+    .tag.equipment-bodyweight {
+      color: #dff8e8;
+      background: rgba(44, 214, 125, 0.12);
+      border-color: rgba(44, 214, 125, 0.22);
+    }
+
     .tag.accent {
       color: #ffe2c3;
       background: rgba(255, 138, 31, 0.12);
@@ -376,6 +413,45 @@
 
     .stats strong {
       color: var(--text);
+    }
+
+    .weight-area {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .weight-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .weight-input {
+      width: 110px;
+      min-height: 40px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      outline: none;
+    }
+
+    .weight-input::placeholder {
+      color: var(--muted-2);
+    }
+
+    .weight-input:focus {
+      border-color: rgba(255, 138, 31, 0.44);
+      box-shadow: 0 0 0 3px rgba(255, 138, 31, 0.14);
+    }
+
+    .weight-tip {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
 
     .points {
@@ -407,7 +483,8 @@
 
     .exercise-actions {
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      align-items: flex-end;
       gap: 10px;
       margin-left: auto;
       flex-shrink: 0;
@@ -430,12 +507,24 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       min-width: 48px;
       min-height: 48px;
+      padding: 0 12px;
       border-radius: 14px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--line);
       transition: background 160ms ease, border-color 160ms ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .check-text {
+      font-size: 12px;
+      font-weight: 800;
+      color: #dafbe6;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
     }
 
     .check-wrap input {
@@ -474,7 +563,6 @@
       font-size: 12px;
       font-weight: 800;
       letter-spacing: 0.04em;
-      text-transform: uppercase;
     }
 
     .detail[open] > summary::after {
@@ -498,6 +586,29 @@
 
     .footer-panel {
       margin-top: 16px;
+    }
+
+    .footer-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .footer-action {
+      min-height: 48px;
+      padding: 0 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .footer-action.primary {
+      background: linear-gradient(180deg, rgba(255, 138, 31, 0.24), rgba(255, 138, 31, 0.14));
+      border-color: rgba(255, 138, 31, 0.24);
+      color: #fff4ea;
     }
 
     .week-stat-grid {
@@ -726,6 +837,10 @@
       .detail {
         padding: 0 16px 16px;
       }
+
+      .footer-actions {
+        max-width: 360px;
+      }
     }
   </style>
 </head>
@@ -735,8 +850,8 @@
       <span class="eyebrow">Gym Workout Tracker</span>
       <h1 class="title">健身计划网页</h1>
       <p class="subtitle">
-        三个训练日、两周切换、组间计时器、完成打卡全部离线运行。页面状态会保存在本机
-        <code>localStorage</code>，适合手机浏览器和 GitHub Pages 直接使用。
+        三个训练日、两周切换、组间计时器、✔ 搞定状态全部离线运行。页面状态会保存在本机
+        <code>localStorage</code>，适合手机浏览器和 GitHub Pages 直接使用。🔒 你的数据永不离开你的设备
       </p>
 
       <div class="toolbar">
@@ -789,6 +904,10 @@
           </div>
         </div>
         <div class="week-stat-grid" id="dayStats"></div>
+        <div class="footer-actions">
+          <button class="footer-action primary" type="button" id="exportDataBtn">📥 导出数据</button>
+          <button class="footer-action" type="button" id="importDataBtn">📤 导入数据</button>
+        </div>
       </section>
     </section>
 
@@ -821,12 +940,15 @@
     </div>
   </div>
 
+  <input class="sr-only" id="importDataInput" type="file" accept="application/json,.json" />
+
   <script>
     (() => {
       const STORAGE = {
         day: "gym-tracker:selected-day:v1",
         week: "gym-tracker:selected-week:v1",
         donePrefix: "gym-tracker:done:v1:",
+        weightPrefix: "gym-tracker:weight:v1:",
       };
 
       const workouts = {
@@ -1141,6 +1263,93 @@
         },
       };
 
+      const exerciseGuides = {
+        "lat-pulldown": [
+          "器械长什么样：一台带高位滑轮的机器，椅子可调高度，上方有长横杆。",
+          "怎么做：1.大腿垫卡住不漂 2.握距比肩宽一拳，手掌朝前 3.肩膀先下沉，手肘向下向后拉（不是用手拽）4.横杆拉到下巴下方 5.慢放，手臂伸直但肩不耸。",
+          "最易犯错：身体后仰借力/耸肩/用手臂拽。",
+          "应感觉到：背阔肌（腋窝下那片）拉扯感，不是手臂酸。",
+        ],
+        "seated-cable-row": [
+          "器械长什么样：坐姿划船机，脚踩踏板，面前低位滑轮配V型把手。",
+          "怎么做：1.脚踩踏板膝微屈 2.先夹紧肩胛骨，手肘贴身体后拉 3.把手拉到腹部，顶峰停1秒 4.慢放。",
+          "最易犯错：腰前后晃动借力/耸肩/拉太高（到胸口）。",
+          "应感觉到：背部中间有挤压感。",
+        ],
+        "chest-press": [
+          "器械长什么样：靠背椅+两个前推扶手。",
+          "怎么做：1.座椅调至握把轴心对齐胸中部（最关键）2.后背贴紧，手腕中立 3.肩胛骨收紧贴靠背，前推 4.推到肘微屈不锁死 5.慢收。",
+          "最易犯错：座椅太高或太低/肩膀前耸/肘关节锁死。",
+          "应感觉到：胸部撑开和挤压感。",
+        ],
+        "shoulder-press": [
+          "怎么做：1.座椅调至握把约在肩高 2.背贴靠背核心收紧 3.向上推至肘微屈 4.下放至下巴高度就停。",
+          "最易犯错：耸肩/下放太低（低于锁骨）/身体后仰借力。",
+          "应感觉到：肩膀前侧发热酸胀。若无专门肩推机，用哑铃坐姿推举代替。",
+        ],
+        "face-pull": [
+          "器械长什么样：龙门架，滑轮调至面部高度，装绳索把手。",
+          "怎么做：1.双手各抓绳头，大拇指朝自己 2.手肘向两侧打开与肩同高 3.拉到耳朵两侧 4.慢放。",
+          "最易犯错：手肘往下拉/太重身体后仰/拉到脖子后。",
+          "应感觉到：肩后侧和上背灼热感。",
+        ],
+        "plank": [
+          "怎么做：1.手肘在肩正下方，前臂贴地 2.脚尖着地，脚跟到后脑勺一条直线 3.腹部收紧（想象有人要打你肚子）4.自然呼吸。",
+          "最易犯错：塌腰（最危险）/屁股撅太高/憋气。",
+          "应感觉到：腹部深层收紧，不是下背酸痛。",
+        ],
+        "leg-press": [
+          "器械长什么样：大斜板+脚踩板+座椅。",
+          "怎么做：1.脚距与肩同宽，脚踏板上半部 2.推至腿接近伸直膝不锁 3.下放至膝盖约90度 4.脚后跟发力。",
+          "最易犯错：膝盖锁死/下放太深屁股离凳/脚太靠下/用手推膝。",
+          "应感觉到：大腿前侧和臀部发力。",
+        ],
+        "seated-leg-curl": [
+          "器械长什么样：座椅+圆垫压在脚踝前侧。",
+          "怎么做：1.圆垫压脚踝上方 2.膝关节对齐器械轴心 3.大腿后侧发力往下压 4.顶峰停1秒慢放。",
+          "最易犯错：爆发力甩/坐姿不对轴心错。",
+          "应感觉到：大腿后侧抽筋般的感觉。",
+        ],
+        "leg-extension": [
+          "器械长什么样：靠背椅+小腿前圆垫。",
+          "怎么做：1.膝关节对齐轴心 2.踢到腿伸直，顶峰停1秒收紧股四头肌 3.慢放不让配重片砸到底。",
+          "最易犯错：爆发力踢/完全放松砸底/身体晃动。",
+          "应感觉到：大腿前侧灼烧感。",
+        ],
+        "back-extension": [
+          "器械长什么样：罗马椅/背屈伸凳。",
+          "怎么做：1.垫子压髋部大腿上方（不是肚子）2.脚卡稳，身体笔直 3.前倾至约45度 4.用下背臀部发力拉回，不过伸。",
+          "最易犯错：过伸（超水平线）/惯性甩/垫子压肚子上。",
+          "应感觉到：下背和臀部发力。",
+        ],
+        "dead-bug": [
+          "怎么做：1.仰卧，双手伸向天花板，腿抬膝弯90度 2.下背贴紧地面（最重要）3.同时伸出右手和左腿，不碰地 4.回位换边。",
+          "最易犯错：下背离地/憋气。",
+          "应感觉到：腹部深层收紧像束腰带。",
+        ],
+        "ab-crunch": [
+          "器械长什么样：座椅+胸前垫子/横杆。",
+          "怎么做：1.脚卡踏板 2.手搭握把不发力 3.纯腹部发力把胸垫往下卷 4.卷到底停1秒慢放。",
+          "最易犯错：用手臂拉握把/惯性弹/太重。",
+          "应感觉到：上腹部收紧。",
+        ],
+        "goblet-squat": [
+          "怎么做：1.双手托哑铃一端贴胸口（像高脚杯）2.脚比肩略宽脚尖微朝外 3.先屁股后坐（髋启动）再屈膝 4.蹲到大腿平行 5.脚后跟发力站起。",
+          "最易犯错：膝盖内扣/先屈膝再屈髋/脚后跟抬起/下背弯曲。",
+          "应感觉到：大腿前侧和臀部发力，核心全程收紧。",
+        ],
+      };
+
+      Object.assign(exerciseGuides, {
+        "c-lat-pulldown": exerciseGuides["lat-pulldown"],
+        "c-chest-press": exerciseGuides["chest-press"],
+        "c-leg-press": exerciseGuides["leg-press"],
+        "c-seated-row": exerciseGuides["seated-cable-row"],
+        "c-shoulder-press": exerciseGuides["shoulder-press"],
+        "c-goblet-squat": exerciseGuides["goblet-squat"],
+        "c-plank": exerciseGuides["plank"],
+      });
+
       const state = {
         day: loadState(STORAGE.day, "A"),
         week: loadState(STORAGE.week, 1),
@@ -1169,6 +1378,9 @@
         timerReset: document.getElementById("timerReset"),
         timerDone: document.getElementById("timerDone"),
         timerClose: document.getElementById("timerClose"),
+        exportDataBtn: document.getElementById("exportDataBtn"),
+        importDataBtn: document.getElementById("importDataBtn"),
+        importDataInput: document.getElementById("importDataInput"),
       };
 
       let timerState = {
@@ -1188,6 +1400,7 @@
         bindTabs();
         bindWeekSwitch();
         bindTimerControls();
+        bindDataControls();
         render();
       }
 
@@ -1207,8 +1420,111 @@
         localStorage.setItem(key, String(value));
       }
 
+      function bindDataControls() {
+        els.exportDataBtn.addEventListener("click", exportData);
+        els.importDataBtn.addEventListener("click", () => els.importDataInput.click());
+        els.importDataInput.addEventListener("change", handleImportFile);
+      }
+
       function storageKey(day, week, itemId) {
         return `${STORAGE.donePrefix}week:${week}:day:${day}:exercise:${itemId}`;
+      }
+
+      function weightStorageKey(day, week, itemId) {
+        return `${STORAGE.weightPrefix}week:${week}:day:${day}:exercise:${itemId}`;
+      }
+
+      function getStoredWeight(day, week, itemId) {
+        const currentKey = weightStorageKey(day, week, itemId);
+        const currentValue = localStorage.getItem(currentKey);
+        if (currentValue !== null) {
+          return currentValue;
+        }
+        if (week === 2) {
+          const previousValue = localStorage.getItem(weightStorageKey(day, 1, itemId));
+          return previousValue ?? "";
+        }
+        return "";
+      }
+
+      function getPreviousWeekWeight(day, week, itemId) {
+        if (week !== 2) return "";
+        const previousValue = localStorage.getItem(weightStorageKey(day, 1, itemId));
+        return previousValue ?? "";
+      }
+
+      function setWeight(day, week, itemId, value) {
+        localStorage.setItem(weightStorageKey(day, week, itemId), value);
+      }
+
+      function exportData() {
+        const payload = {};
+        for (let index = 0; index < localStorage.length; index += 1) {
+          const key = localStorage.key(index);
+          if (key && key.startsWith("gym-tracker:")) {
+            payload[key] = localStorage.getItem(key);
+          }
+        }
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `gym-tracker-export-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
+      }
+
+      async function handleImportFile(event) {
+        const file = event.target.files && event.target.files[0];
+        event.target.value = "";
+        if (!file) return;
+        const confirmed = window.confirm("导入会覆盖当前 gym-tracker 数据，是否继续？");
+        if (!confirmed) return;
+
+        try {
+          const text = await file.text();
+          const parsed = JSON.parse(text);
+          const entries = Array.isArray(parsed)
+            ? parsed
+            : parsed && typeof parsed === "object"
+              ? Object.entries(parsed)
+              : [];
+
+          if (entries.length === 0) {
+            throw new Error("JSON 中没有可导入的数据");
+          }
+
+          const imported = entries.filter((entry) => {
+            if (Array.isArray(entry)) {
+              return typeof entry[0] === "string" && entry[0].startsWith("gym-tracker:");
+            }
+            return false;
+          });
+
+          if (imported.length === 0) {
+            throw new Error("未找到 gym-tracker:* 键");
+          }
+
+          const existingKeys = [];
+          for (let index = 0; index < localStorage.length; index += 1) {
+            const key = localStorage.key(index);
+            if (key && key.startsWith("gym-tracker:")) {
+              existingKeys.push(key);
+            }
+          }
+          existingKeys.forEach((key) => localStorage.removeItem(key));
+          imported.forEach(([key, value]) => {
+            localStorage.setItem(key, String(value));
+          });
+          state.day = loadState(STORAGE.day, state.day);
+          state.week = loadState(STORAGE.week, state.week);
+          render();
+        } catch (error) {
+          window.alert(`导入失败：${error.message}`);
+        }
       }
 
       function getWorkout(day = state.day) {
@@ -1364,6 +1680,12 @@
             render();
           });
         });
+        els.workoutList.querySelectorAll("[data-weight-input]").forEach((input) => {
+          input.addEventListener("input", () => {
+            const { day, week, itemId } = input.dataset;
+            setWeight(day, Number(week), itemId, input.value);
+          });
+        });
         els.workoutList.querySelectorAll("[data-timer]").forEach((button) => {
           button.addEventListener("click", () => {
             const itemId = button.dataset.timer;
@@ -1376,9 +1698,11 @@
       function renderExerciseCard(item) {
         const checked = isDone(state.day, state.week, item.id);
         const points = item.keyPoints.map((point) => `<li>${escapeHTML(point)}</li>`).join("");
-        const weekTip = state.week === 2
-          ? "按提示尝试加重量，但优先保持动作标准。"
-          : "先把发力感、节奏和稳定性做扎实。";
+        const guide = getExerciseGuide(item);
+        const weightValue = getStoredWeight(state.day, state.week, item.id);
+        const previousWeight = getPreviousWeekWeight(state.day, state.week, item.id);
+        const equipment = getEquipmentMeta(item.equipment);
+        const guideHTML = guide.blocks.map((block) => `<p>${escapeHTML(block)}</p>`).join("");
         return `
           <article class="exercise-card ${checked ? "done" : ""}" data-card="${item.id}">
             <div class="exercise-head">
@@ -1391,15 +1715,16 @@
                       <span class="exercise-en">${escapeHTML(item.en)}</span>
                     </h3>
                     <div class="meta-row">
-                      <span class="tag ${equipmentClass(item.equipment)}">${equipmentIcon(item.equipment)} ${escapeHTML(item.equipment)}</span>
-                      <span class="tag accent">${escapeHTML(item.sets)} · 歇 ${item.rest}s</span>
+                      <span class="tag ${equipment.className}">${equipment.icon} ${escapeHTML(equipment.label)}</span>
+                      <span class="tag sets">${escapeHTML(item.sets)} · 歇 ${item.rest}s</span>
                     </div>
                   </div>
                   <div class="exercise-actions">
                     <button class="icon-btn" type="button" data-timer="${item.id}" aria-label="计时 ${item.name}">
                       计时
                     </button>
-                    <label class="check-wrap" aria-label="完成打卡 ${item.name}">
+                    <label class="check-wrap" aria-label="✔ 搞定 ${item.name}">
+                      <span class="check-text">✔ 搞定</span>
                       <input
                         type="checkbox"
                         data-toggle-check
@@ -1414,14 +1739,34 @@
                 <div class="stats">
                   <div><strong>组间休息：</strong>${item.rest}s</div>
                 </div>
+                <div class="weight-area">
+                  <div class="weight-row">
+                    <input
+                      class="weight-input"
+                      type="number"
+                      inputmode="decimal"
+                      min="0"
+                      step="0.5"
+                      placeholder="重量 kg"
+                      data-weight-input
+                      data-day="${state.day}"
+                      data-week="${state.week}"
+                      data-item-id="${item.id}"
+                      value="${escapeHTML(weightValue)}"
+                      aria-label="${escapeHTML(item.name)} 重量 kg"
+                    />
+                    <span class="tag accent">重量记录</span>
+                  </div>
+                  ${previousWeight !== "" ? `<div class="weight-tip">上周：${escapeHTML(previousWeight)} kg</div>` : ""}
+                </div>
                 <ul class="points">${points}</ul>
               </div>
             </div>
             <details class="detail">
-              <summary>详细说明</summary>
+              <summary>📖 怎么做</summary>
               <div class="detail-body">
-                <p>${escapeHTML(item.detail)}</p>
-                <p><strong>第${state.week}周：</strong>${escapeHTML(weekTip)}</p>
+                ${guideHTML}
+                ${item.detail ? `<p><strong>训练建议：</strong>${escapeHTML(item.detail)}</p>` : ""}
               </div>
             </details>
           </article>
@@ -1438,16 +1783,19 @@
         els.progressText.textContent = `第${state.week}周已完成 ${doneAcrossDays}/${totalAcrossDays} 个动作（${percent}%）。当前页面显示 ${state.day}：${doneCount}/${total}。`;
       }
 
-      function equipmentClass(type) {
-        if (type === "哑铃") return "good";
-        if (type === "无需器械") return "";
-        return "";
+      function getExerciseGuide(item) {
+        const guide = exerciseGuides[item.id];
+        return guide ? { blocks: guide } : { blocks: ["暂无教学说明。"] };
       }
 
-      function equipmentIcon(type) {
-        if (type === "哑铃") return "◉";
-        if (type === "无需器械") return "•";
-        return "▣";
+      function getEquipmentMeta(type) {
+        if (type === "器械") {
+          return { className: "equipment-machine", icon: "🔧", label: "器械" };
+        }
+        if (type === "哑铃") {
+          return { className: "equipment-dumbbell", icon: "🏋️", label: "哑铃" };
+        }
+        return { className: "equipment-bodyweight", icon: "🧘", label: "自重" };
       }
 
       function escapeHTML(value) {
